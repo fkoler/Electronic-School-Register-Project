@@ -1,0 +1,24 @@
+# Logs
+School-Management-System-Frontend/logs
+School-Management-System-Frontend/*.log
+School-Management-System-Frontend/npm-debug.log*
+School-Management-System-Frontend/yarn-debug.log*
+School-Management-System-Frontend/yarn-error.log*
+School-Management-System-Frontend/pnpm-debug.log*
+School-Management-System-Frontend/lerna-debug.log*
+
+School-Management-System-Frontend/node_modules
+School-Management-System-Frontend/dist
+School-Management-System-Frontend/dist-ssr
+School-Management-System-Frontend/*.local
+
+# Editor directories and files
+School-Management-System-Frontend/.vscode/*
+School-Management-System-Frontend/!.vscode/extensions.json
+School-Management-System-Frontend/.idea
+School-Management-System-Frontend/.DS_Store
+School-Management-System-Frontend/*.suo
+School-Management-System-Frontend/*.ntvs*
+School-Management-System-Frontend/*.njsproj
+School-Management-System-Frontend/*.sln
+School-Management-System-Frontend/*.sw?
