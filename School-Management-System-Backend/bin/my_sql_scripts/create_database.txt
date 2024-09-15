@@ -1,0 +1,2 @@
+create database electronic_diary_db;
+grant all on electronic_diary_db.* to 'springuser'@'localhost';

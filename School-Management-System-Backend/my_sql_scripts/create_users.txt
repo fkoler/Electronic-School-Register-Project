@@ -1,0 +1,8 @@
+INSERT INTO `electronic_diary_db`.`user` (`user_id`, `email`, `last_name`, `name`, `password`, `role`)
+VALUES ('1', 'user@example.com', 'Dimitrieski', 'Vladimir', '{noop}pass', '1');
+
+INSERT INTO `electronic_diary_db`.`user` (`user_id`, `email`, `last_name`, `name`, `password`, `role`)
+VALUES ('2', 'user2@example.com', 'Celikovic', 'Milan', '{noop}pass', '2');
+
+INSERT INTO `electronic_diary_db`.`user` (`user_id`, `email`, `last_name`, `name`, `password`, `role`)
+VALUES ('3', 'user3@example.com', 'Vujanovic', 'Angelina', '{noop}pass', '2');
