@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 
-import { getUsers } from '../../utils/api/api';
+import { loginApi } from '../../services/api/api';
 
 const Login = ({ onLogin }) => {
     const [username, setUsername] = useState('');
@@ -12,12 +12,11 @@ const Login = ({ onLogin }) => {
         e.preventDefault();
 
         try {
-            await getUsers(username, password);
+            await loginApi(username, password);
 
             onLogin({ username, password });
         } catch (err) {
-            setError('Login failed. Please try again.');
-            console.error('Error during login:', err);
+            setError('Login failed. Please try again.', err);
         }
     };
 
@@ -26,7 +25,7 @@ const Login = ({ onLogin }) => {
             <form onSubmit={handleLogin}>
                 <input
                     type='text'
-                    placeholder='Username'
+                    placeholder='Email'
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     required

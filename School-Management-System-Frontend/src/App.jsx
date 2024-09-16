@@ -1,39 +1,49 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Login from './components/Login/login.component';
-import { getUsers } from './utils/api/api';
+
+import { getUsersApi } from './services/api/api';
 
 import './App.css';
 
 const App = () => {
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [users, setUsers] = useState([]);
+    const [user, setUser] = useState(null);
+
+    useEffect(() => {
+        const storedUser = sessionStorage.getItem('user');
+
+        if (storedUser) {
+            setUser(JSON.parse(storedUser));
+        }
+    }, []);
 
     const handleLogin = async ({ username, password }) => {
         try {
-            const fetchedUsers = await getUsers(username, password);
-            setUsers(fetchedUsers);
-            setIsLoggedIn(true);
+            const user = await getUsersApi(username, password);
+
+            setUser(user);
+
+            sessionStorage.setItem('user', JSON.stringify(user));
         } catch (err) {
-            console.error('Failed to fetch users:', err);
+            console.error('handleLogin error:', err);
         }
+    };
+
+    const handleLogout = () => {
+        setUser(null);
+
+        sessionStorage.removeItem('user');
     };
 
     return (
         <div>
-            {!isLoggedIn ? (
-                <Login onLogin={handleLogin} />
-            ) : (
+            {user ? (
                 <div>
-                    <h2>List of users:</h2>
-                    <ul>
-                        {users.map((user) => (
-                            <li key={user.id}>
-                                {user.name} {user.lastName} - {user.email}{' '}
-                                (Role: {user.role.name})
-                            </li>
-                        ))}
-                    </ul>
+                    <h2>Welcome {user[0]?.name}</h2>
+
+                    <button onClick={handleLogout}>Logout</button>
                 </div>
+            ) : (
+                <Login onLogin={handleLogin} />
             )}
         </div>
     );
