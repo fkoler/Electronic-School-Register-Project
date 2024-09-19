@@ -1,4 +1,0 @@
-2024-09-16T11:23:54.924+02:00  INFO 6520 --- [electric_diary] [RMI TCP Connection(8)-127.0.0.1] inMXBeanRegistrar$SpringApplicationAdmin : Application shutdown requested.
-2024-09-16T11:23:54.943+02:00  INFO 6520 --- [electric_diary] [RMI TCP Connection(8)-127.0.0.1] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
-2024-09-16T11:23:54.945+02:00  INFO 6520 --- [electric_diary] [RMI TCP Connection(8)-127.0.0.1] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
-2024-09-16T11:23:54.951+02:00  INFO 6520 --- [electric_diary] [RMI TCP Connection(8)-127.0.0.1] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.

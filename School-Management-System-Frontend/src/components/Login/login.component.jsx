@@ -1,53 +1,64 @@
 import { useState } from 'react';
-import PropTypes from 'prop-types';
+import useAuthStore from '../../features/auth/useAuthStore';
+import { getUsersApi } from '../../services/api/api';
 
-import { loginApi } from '../../services/api/api';
-
-const Login = ({ onLogin }) => {
-    const [username, setUsername] = useState('');
+const Login = () => {
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const login = useAuthStore((state) => state.login);
 
-    const handleLogin = async (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         try {
-            await loginApi(username, password);
+            const users = await getUsersApi(email, password);
+            const user = users.find((u) => u.email === email);
 
-            onLogin({ username, password });
-        } catch (err) {
-            setError('Login failed. Please try again.', err);
+            if (user) {
+                login(user);
+
+                if (user.role.name === 'ROLE_ADMIN') {
+                    window.location.href = '/admin';
+                } else if (user.role.name === 'ROLE_TEACHER') {
+                    window.location.href = '/teacher';
+                } else {
+                    window.location.href = '/';
+                }
+            } else {
+                console.error('User not found');
+            }
+        } catch (error) {
+            setError('Login failed', error);
         }
     };
 
     return (
         <div>
-            <form onSubmit={handleLogin}>
-                <input
-                    type='text'
-                    placeholder='Email'
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    required
-                />
+            <form onSubmit={handleSubmit}>
+                <div>
+                    <label>Email:</label>
+                    <input
+                        type='email'
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                    />
+                </div>
 
-                <input
-                    type='password'
-                    placeholder='Password'
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                />
+                <div>
+                    <label>Password:</label>
+                    <input
+                        type='password'
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                    />
+                </div>
 
                 <button type='submit'>Login</button>
+                {error && <p style={{ color: 'red' }}>{error}</p>}
             </form>
-            {error && <p style={{ color: 'red' }}>{error}</p>}
         </div>
     );
-};
-
-Login.propTypes = {
-    onLogin: PropTypes.func.isRequired,
 };
 
 export default Login;

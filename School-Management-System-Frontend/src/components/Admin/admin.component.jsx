@@ -1,35 +1,40 @@
-import { useState } from 'react';
-
-import PropTypes from 'prop-types';
-
+import { useState, useCallback } from 'react';
+import useAuthStore from '../../features/auth/useAuthStore';
 import {
     getUsersApi,
     getClassesApi,
     getSubjectsApi,
 } from '../../services/api/api';
 
-const AdminDashboard = ({ username, password }) => {
+const AdminDashboard = () => {
     const [data, setData] = useState(null);
     const [error, setError] = useState(null);
     const [type, setType] = useState('');
 
-    const fetchData = async (type) => {
-        setError(null);
-        setType(type);
-        try {
-            let result;
-            if (type === 'users') {
-                result = await getUsersApi(username, password);
-            } else if (type === 'classes') {
-                result = await getClassesApi(username, password);
-            } else if (type === 'subjects') {
-                result = await getSubjectsApi(username, password);
+    const email = useAuthStore((state) => state.user.email);
+    const authPassword = useAuthStore((state) => state.user.password);
+    const password = authPassword.replace('{noop}', '');
+
+    const fetchData = useCallback(
+        async (type) => {
+            setError(null);
+            setType(type);
+            try {
+                let result;
+                if (type === 'users') {
+                    result = await getUsersApi(email, password);
+                } else if (type === 'classes') {
+                    result = await getClassesApi(email, password);
+                } else if (type === 'subjects') {
+                    result = await getSubjectsApi(email, password);
+                }
+                setData(result);
+            } catch (err) {
+                setError(`Failed to load ${type}`, err);
             }
-            setData(result);
-        } catch (err) {
-            setError(`Failed to load ${type}`, err);
-        }
-    };
+        },
+        [email, password]
+    );
 
     return (
         <div>
@@ -50,11 +55,6 @@ const AdminDashboard = ({ username, password }) => {
             )}
         </div>
     );
-};
-
-AdminDashboard.propTypes = {
-    username: PropTypes.string.isRequired,
-    password: PropTypes.string.isRequired,
 };
 
 export default AdminDashboard;
