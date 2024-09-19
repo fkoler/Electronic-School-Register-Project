@@ -1,6 +1,7 @@
 import { useState } from 'react';
+
 import useAuthStore from '../../features/auth/useAuthStore';
-import { getUsersApi } from '../../services/api/api';
+import { loginApi } from '../../services/api/api';
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -12,24 +13,28 @@ const Login = () => {
         e.preventDefault();
 
         try {
-            const users = await getUsersApi(email, password);
+            const users = await loginApi(email, password);
             const user = users.find((u) => u.email === email);
 
-            if (user) {
-                login(user);
-
-                if (user.role.name === 'ROLE_ADMIN') {
-                    window.location.href = '/admin';
-                } else if (user.role.name === 'ROLE_TEACHER') {
-                    window.location.href = '/teacher';
-                } else {
-                    window.location.href = '/';
-                }
-            } else {
+            if (!user) {
                 console.error('User not found');
+                setError('User not found');
+                return;
+            }
+
+            login(user);
+
+            if (user.role.name === 'ROLE_ADMIN') {
+                window.location.href = '/admin';
+            } else if (user.role.name === 'ROLE_TEACHER') {
+                window.location.href = '/teacher';
+            } else {
+                window.location.href = '/';
             }
         } catch (error) {
-            setError('Login failed', error);
+            setError('Login failed: ' + error.message);
+
+            console.error('Login failed:', error);
         }
     };
 
