@@ -1,11 +1,16 @@
 import { useState, useEffect } from 'react';
+
 import PropTypes from 'prop-types';
 
 import useAuthStore from '../../features/auth/useAuthStore';
 import { getUsersApi } from '../../services/api/api';
 
-const UsersCard = () => {
+import SearchBar from './searchbar.component';
+
+const UserCard = () => {
     const [users, setUsers] = useState([]);
+    const [filteredUsers, setFilteredUsers] = useState([]);
+    const [searchTerm, setSearchTerm] = useState('');
     const [error, setError] = useState(null);
 
     const email = useAuthStore((state) => state.user.email);
@@ -17,6 +22,7 @@ const UsersCard = () => {
             try {
                 const result = await getUsersApi(email, password);
                 setUsers(result);
+                setFilteredUsers(result);
             } catch (err) {
                 setError('Failed to load users', err);
             }
@@ -25,6 +31,20 @@ const UsersCard = () => {
         fetchUsers();
     }, [email, password]);
 
+    const normalizeString = (str) => str.trim().replace(/\s+/g, ' ');
+
+    useEffect(() => {
+        const normalizedSearchTerm = normalizeString(searchTerm.toLowerCase());
+
+        setFilteredUsers(
+            users.filter((user) =>
+                normalizeString(
+                    `${user.name} ${user.lastName} ${user.email}`.toLowerCase()
+                ).includes(normalizedSearchTerm)
+            )
+        );
+    }, [searchTerm, users]);
+
     if (error) {
         return <p>{error}</p>;
     }
@@ -32,8 +52,11 @@ const UsersCard = () => {
     return (
         <div>
             <h2>Users Data:</h2>
+
+            <SearchBar value={searchTerm} onChange={setSearchTerm} />
+
             <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-                {users.map((user) => (
+                {filteredUsers.map((user) => (
                     <div key={user.id} style={styles.card}>
                         <h3>{`${user.name} ${user.lastName}`}</h3>
                         <p>Email: {user.email}</p>
@@ -45,7 +68,7 @@ const UsersCard = () => {
     );
 };
 
-UsersCard.propTypes = {
+UserCard.propTypes = {
     users: PropTypes.arrayOf(
         PropTypes.shape({
             id: PropTypes.number.isRequired,
@@ -71,4 +94,4 @@ const styles = {
     },
 };
 
-export default UsersCard;
+export default UserCard;

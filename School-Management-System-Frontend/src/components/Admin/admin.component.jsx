@@ -16,8 +16,8 @@ const AdminDashboard = () => {
             <h1>Welcome Admin</h1>
 
             <div>
-                <button onClick={() => handleClick('users')}>Users</button>
-                <button onClick={() => handleClick('classes')}>Classes</button>
+                <button onClick={() => handleClick('users')}>Users</button>{' '}
+                <button onClick={() => handleClick('classes')}>Classes</button>{' '}
                 <button onClick={() => handleClick('subjects')}>
                     Subjects
                 </button>

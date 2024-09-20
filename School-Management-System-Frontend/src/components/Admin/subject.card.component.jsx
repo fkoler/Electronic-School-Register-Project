@@ -5,8 +5,12 @@ import PropTypes from 'prop-types';
 import useAuthStore from '../../features/auth/useAuthStore';
 import { getSubjectsApi } from '../../services/api/api';
 
+import SearchBar from './searchbar.component';
+
 const SubjectCard = () => {
     const [subjects, setSubjects] = useState([]);
+    const [filteredSubjects, setFilteredSubjects] = useState([]);
+    const [searchTerm, setSearchTerm] = useState('');
     const [error, setError] = useState(null);
 
     const email = useAuthStore((state) => state.user.email);
@@ -18,6 +22,7 @@ const SubjectCard = () => {
             try {
                 const result = await getSubjectsApi(email, password);
                 setSubjects(result);
+                setFilteredSubjects(result);
             } catch (err) {
                 setError('Failed to load subjects', err);
             }
@@ -26,6 +31,20 @@ const SubjectCard = () => {
         fetchSubjects();
     }, [email, password]);
 
+    const normalizeString = (str) => str.trim().replace(/\s+/g, ' ');
+
+    useEffect(() => {
+        const normalizedSearchTerm = normalizeString(searchTerm.toLowerCase());
+
+        setFilteredSubjects(
+            subjects.filter((subject) =>
+                normalizeString(subject.name.toLowerCase()).includes(
+                    normalizedSearchTerm
+                )
+            )
+        );
+    }, [searchTerm, subjects]);
+
     if (error) {
         return <p>{error}</p>;
     }
@@ -33,8 +52,11 @@ const SubjectCard = () => {
     return (
         <div>
             <h2>Subjects Data:</h2>
+
+            <SearchBar value={searchTerm} onChange={setSearchTerm} />
+
             <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-                {subjects.map((subject) => (
+                {filteredSubjects.map((subject) => (
                     <div key={subject.id} style={styles.card}>
                         <h3>{subject.name}</h3>
                         <p>Weekly Fund: {subject.weeklyFund}</p>

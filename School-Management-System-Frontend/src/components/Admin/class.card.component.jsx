@@ -5,8 +5,12 @@ import PropTypes from 'prop-types';
 import useAuthStore from '../../features/auth/useAuthStore';
 import { getClassesApi } from '../../services/api/api';
 
+import SearchBar from './searchbar.component';
+
 const ClassCard = () => {
     const [classes, setClasses] = useState([]);
+    const [filteredClasses, setFilteredClasses] = useState([]);
+    const [searchTerm, setSearchTerm] = useState('');
     const [error, setError] = useState(null);
 
     const email = useAuthStore((state) => state.user.email);
@@ -18,6 +22,7 @@ const ClassCard = () => {
             try {
                 const result = await getClassesApi(email, password);
                 setClasses(result);
+                setFilteredClasses(result);
             } catch (err) {
                 setError('Failed to load classes', err);
             }
@@ -26,6 +31,20 @@ const ClassCard = () => {
         fetchClasses();
     }, [email, password]);
 
+    const normalizeString = (str) => str.trim().replace(/\s+/g, ' ');
+
+    useEffect(() => {
+        const normalizedSearchTerm = normalizeString(searchTerm.toLowerCase());
+
+        setFilteredClasses(
+            classes.filter((classItem) =>
+                normalizeString(classItem.name.toLowerCase()).includes(
+                    normalizedSearchTerm
+                )
+            )
+        );
+    }, [searchTerm, classes]);
+
     if (error) {
         return <p>{error}</p>;
     }
@@ -33,8 +52,11 @@ const ClassCard = () => {
     return (
         <div>
             <h2>Classes Data:</h2>
+
+            <SearchBar value={searchTerm} onChange={setSearchTerm} />
+
             <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-                {classes.map((classItem) => (
+                {filteredClasses.map((classItem) => (
                     <div key={classItem.id} style={styles.card}>
                         <h3>{classItem.name}</h3>
                     </div>
