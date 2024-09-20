@@ -6,6 +6,8 @@ import Login from './components/Login/login.component';
 import Admin from './components/Admin/admin.component';
 import Teacher from './components/Teacher/teacher.component';
 
+import ProtectedRoutes from './utils/protected.routes/protected.routes';
+
 import './App.css';
 
 function App() {
@@ -16,8 +18,22 @@ function App() {
                 <Routes>
                     <Route path='/' element={<Home />} />
                     <Route path='/login' element={<Login />} />
-                    <Route path='/admin' element={<Admin />} />
-                    <Route path='/teacher' element={<Teacher />} />
+
+                    <Route
+                        element={
+                            <ProtectedRoutes allowedRoles={['ROLE_ADMIN']} />
+                        }
+                    >
+                        <Route path='/admin' element={<Admin />} />
+                    </Route>
+
+                    <Route
+                        element={
+                            <ProtectedRoutes allowedRoles={['ROLE_TEACHER']} />
+                        }
+                    >
+                        <Route path='/teacher' element={<Teacher />} />
+                    </Route>
                 </Routes>
             </Router>
         </>

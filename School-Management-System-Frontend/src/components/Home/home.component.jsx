@@ -1,7 +1,10 @@
 import { useNavigate } from 'react-router-dom';
 
+import useAuthStore from '../../utils/auth/useAuthStore';
+
 const Home = () => {
     const navigate = useNavigate();
+    const user = useAuthStore((state) => state.user);
 
     const goToLogin = () => {
         navigate('/login');
@@ -10,7 +13,7 @@ const Home = () => {
     return (
         <div>
             <h1>Welcome to Electronic School-Diary</h1>
-            <button onClick={goToLogin}>Go to Login</button>
+            {!user && <button onClick={goToLogin}>Go to Login</button>}
         </div>
     );
 };

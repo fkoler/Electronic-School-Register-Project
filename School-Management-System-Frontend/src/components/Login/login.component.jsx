@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import useAuthStore from '../../features/auth/useAuthStore';
+import useAuthStore from '../../utils/auth/useAuthStore';
 import { loginApi } from '../../services/api/api';
 
 const Login = () => {

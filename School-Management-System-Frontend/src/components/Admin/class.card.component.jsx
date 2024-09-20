@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 
 import PropTypes from 'prop-types';
 
-import useAuthStore from '../../features/auth/useAuthStore';
+import useAuthStore from '../../utils/auth/useAuthStore';
 import { getClassesApi } from '../../services/api/api';
 
 import SearchBar from './searchbar.component';
