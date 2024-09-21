@@ -3,13 +3,13 @@ import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 import useAuthStore from '../../utils/auth/useAuthStore';
-import { getClassesApi } from '../../services/api/api';
+import { getUsersApi } from '../../services/api/api';
 
-import SearchBar from './searchbar.component';
+import SearchBar from '../SearchBar/searchbar.component';
 
-const ClassCard = () => {
-    const [classes, setClasses] = useState([]);
-    const [filteredClasses, setFilteredClasses] = useState([]);
+const UserCard = () => {
+    const [users, setUsers] = useState([]);
+    const [filteredUsers, setFilteredUsers] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [error, setError] = useState(null);
 
@@ -18,17 +18,17 @@ const ClassCard = () => {
     const password = authPassword.replace('{noop}', '');
 
     useEffect(() => {
-        const fetchClasses = async () => {
+        const fetchUsers = async () => {
             try {
-                const result = await getClassesApi(email, password);
-                setClasses(result);
-                setFilteredClasses(result);
+                const result = await getUsersApi(email, password);
+                setUsers(result);
+                setFilteredUsers(result);
             } catch (err) {
-                setError('Failed to load classes', err);
+                setError('Failed to load users', err);
             }
         };
 
-        fetchClasses();
+        fetchUsers();
     }, [email, password]);
 
     const normalizeString = (str) => str.trim().replace(/\s+/g, ' ');
@@ -36,14 +36,14 @@ const ClassCard = () => {
     useEffect(() => {
         const normalizedSearchTerm = normalizeString(searchTerm.toLowerCase());
 
-        setFilteredClasses(
-            classes.filter((classItem) =>
-                normalizeString(classItem.name.toLowerCase()).includes(
-                    normalizedSearchTerm
-                )
+        setFilteredUsers(
+            users.filter((user) =>
+                normalizeString(
+                    `${user.name} ${user.lastName} ${user.email}`.toLowerCase()
+                ).includes(normalizedSearchTerm)
             )
         );
-    }, [searchTerm, classes]);
+    }, [searchTerm, users]);
 
     if (error) {
         return <p>{error}</p>;
@@ -51,14 +51,16 @@ const ClassCard = () => {
 
     return (
         <div>
-            <h2>Classes Data:</h2>
+            <h2>Users Data:</h2>
 
             <SearchBar value={searchTerm} onChange={setSearchTerm} />
 
             <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-                {filteredClasses.map((classItem) => (
-                    <div key={classItem.id} style={styles.card}>
-                        <h3>{classItem.name}</h3>
+                {filteredUsers.map((user) => (
+                    <div key={user.id} style={styles.card}>
+                        <h3>{`${user.name} ${user.lastName}`}</h3>
+                        <p>Email: {user.email}</p>
+                        <p>Role: {user.role.name}</p>
                     </div>
                 ))}
             </div>
@@ -66,11 +68,16 @@ const ClassCard = () => {
     );
 };
 
-ClassCard.propTypes = {
-    classes: PropTypes.arrayOf(
+UserCard.propTypes = {
+    users: PropTypes.arrayOf(
         PropTypes.shape({
             id: PropTypes.number.isRequired,
             name: PropTypes.string.isRequired,
+            lastName: PropTypes.string.isRequired,
+            email: PropTypes.string.isRequired,
+            role: PropTypes.shape({
+                name: PropTypes.string.isRequired,
+            }).isRequired,
         })
     ),
 };
@@ -87,4 +94,4 @@ const styles = {
     },
 };
 
-export default ClassCard;
+export default UserCard;

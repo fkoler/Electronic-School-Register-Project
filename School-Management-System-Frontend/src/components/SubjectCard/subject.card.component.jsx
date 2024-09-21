@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import useAuthStore from '../../utils/auth/useAuthStore';
 import { getSubjectsApi } from '../../services/api/api';
 
-import SearchBar from './searchbar.component';
+import SearchBar from '../SearchBar/searchbar.component';
 
 const SubjectCard = () => {
     const [subjects, setSubjects] = useState([]);

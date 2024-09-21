@@ -1,8 +1,8 @@
 import { useState } from 'react';
 
-import UserCard from './user.card.component';
-import ClassCard from './class.card.component';
-import SubjectCard from './subject.card.component';
+import UserCard from '../UserCard/user.card.component';
+import ClassCard from '../ClassCard/class.card.component';
+import SubjectCard from '../SubjectCard/subject.card.component';
 
 const AdminDashboard = () => {
     const [type, setType] = useState('');
