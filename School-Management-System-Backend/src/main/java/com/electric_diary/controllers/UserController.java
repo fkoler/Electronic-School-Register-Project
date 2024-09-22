@@ -3,6 +3,7 @@ package com.electric_diary.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,6 +38,11 @@ public class UserController {
 	@GetMapping("/{userId}")
 	public ResponseEntity<UserEntity> getUserById(@PathVariable Integer userId) {
 		return new ResponseEntity<>(userService.getUserById(userId), HttpStatus.OK);
+	}
+	
+	@GetMapping("/email/{userEmail}")
+	public ResponseEntity<UserEntity> getUserByEmail(@PathVariable String userEmail) {
+		return new ResponseEntity<>(userService.getUserByEmail(userEmail), HttpStatus.OK);
 	}
 
 	@PutMapping("/{userId}")

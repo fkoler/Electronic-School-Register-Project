@@ -31,19 +31,37 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public UserEntity createUser(UserRequestDTO userDTOBody) {
-		RoleEntity role = getRoleById(userDTOBody.getRoleId());
+	    if (userDTOBody.getEmail() == null || userDTOBody.getPassword() == null || 
+	        userDTOBody.getName() == null || userDTOBody.getLastName() == null) {
+	        throw new IllegalArgumentException("All fields are required.");
+	    }
 
-		UserEntity user = new UserEntity();
-		user.setName(userDTOBody.getName());
-		user.setLastName(userDTOBody.getLastName());
-		user.setPassword("{noop}" + userDTOBody.getPassword());
-		user.setEmail(userDTOBody.getEmail());
-		user.setRole(role);
-		userRepository.save(user);
-		logger.info("Created user with ID {}.", user.getId());
+	    if (!userDTOBody.getEmail().contains("@")) {
+	        throw new IllegalArgumentException("Invalid email format.");
+	    }
 
-		return user;
+	    RoleEntity role = getRoleById(userDTOBody.getRole());
+	    if (role == null) {
+	        throw new IllegalArgumentException("Role not found.");
+	    }
+
+	    UserEntity user = new UserEntity();
+	    user.setName(userDTOBody.getName());
+	    user.setLastName(userDTOBody.getLastName());
+	    user.setPassword("{noop}" + userDTOBody.getPassword());
+	    user.setEmail(userDTOBody.getEmail());
+	    user.setRole(role);
+
+	    try {
+	        userRepository.save(user);
+	        logger.info("Created user with ID {} and email {}", user.getId(), user.getEmail());
+	    } catch (Exception e) {
+	        logger.error("Error while creating user: {}", e.getMessage());
+	        throw new RuntimeException("User creation failed.");
+	    }
+	    return user;
 	}
+
 
 	@Override
 	public Iterable<UserEntity> getAllUsers() {
@@ -56,11 +74,16 @@ public class UserServiceImpl implements UserService {
 		logger.info("Fetched user with ID {}.", userId);
 		return userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User", userId));
 	}
+	
+	@Override
+	public UserEntity getUserByEmail(String userEmail) {
+		return userRepository.findByEmail(userEmail).orElseThrow(() -> new NotFoundException("User", 1));
+	}
 
 	@Override
 	public UserEntity updateUser(Integer userId, UserRequestDTO userDTOBody) {
 		UserEntity user = getUserById(userId);
-		RoleEntity role = getRoleById(userDTOBody.getRoleId());
+		RoleEntity role = getRoleById(userDTOBody.getRole());
 
 		user.setName(userDTOBody.getName());
 		user.setLastName(userDTOBody.getLastName());

@@ -22,5 +22,5 @@ public class ParentRequestDTO {
 	@NotBlank(message = "Email is mandatory")
 	@Email(message = "Email should be valid")
 	private String email;
-	private Integer userId;
+	private String password;
 }

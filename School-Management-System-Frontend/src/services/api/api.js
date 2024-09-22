@@ -1,5 +1,7 @@
 import axios from 'axios';
 
+const apiURL = 'http://localhost:8080/api/v1';
+
 const fetchWithTimeout = async (url, options, timeout = 500) => {
     return Promise.race([
         axios(url, options),
@@ -9,16 +11,22 @@ const fetchWithTimeout = async (url, options, timeout = 500) => {
     ]);
 };
 
-const apiCall = async (url, username, password) => {
+const apiCall = async (url, method, username, password, data = null) => {
     const credentials = btoa(`${username}:${password}`);
 
     try {
-        const response = await fetchWithTimeout(url, {
-            method: 'GET',
-            headers: {
-                Authorization: `Basic ${credentials}`,
+        const response = await fetchWithTimeout(
+            url,
+            {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Basic ${credentials}`,
+                },
+                data: data,
             },
-        });
+            500
+        );
 
         return response.data;
     } catch (error) {
@@ -47,17 +55,36 @@ const handleApiError = (error) => {
 };
 
 export const loginApi = async (username, password) => {
-    return apiCall('http://localhost:8080/api/v1/users', username, password);
+    return apiCall(`${apiURL}/users`, 'GET', username, password);
 };
 
 export const getUsersApi = async (username, password) => {
-    return apiCall('http://localhost:8080/api/v1/users', username, password);
+    return apiCall(`${apiURL}/users`, 'GET', username, password);
 };
 
 export const getClassesApi = async (username, password) => {
-    return apiCall('http://localhost:8080/api/v1/classes', username, password);
+    return apiCall(`${apiURL}/classes`, 'GET', username, password);
 };
 
 export const getSubjectsApi = async (username, password) => {
-    return apiCall('http://localhost:8080/api/v1/subjects', username, password);
+    return apiCall(`${apiURL}/subjects`, 'GET', username, password);
+};
+
+export const postSubjectApi = async (subjectData, username, password) => {
+    return apiCall(
+        `${apiURL}/subjects`,
+        'POST',
+        username,
+        password,
+        subjectData
+    );
+};
+
+export const deleteSubjectApi = async (username, password, subjectId) => {
+    return apiCall(
+        `${apiURL}/subjects/${subjectId}`,
+        'DELETE',
+        username,
+        password
+    );
 };

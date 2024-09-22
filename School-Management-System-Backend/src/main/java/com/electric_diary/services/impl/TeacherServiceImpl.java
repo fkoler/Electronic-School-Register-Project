@@ -40,19 +40,27 @@ public class TeacherServiceImpl implements TeacherService {
 
 	@Override
 	public TeacherEntity createTeacher(TeacherRequestDTO teacherRequestDTO) {
-		ClassEntity newClass = getClassById(teacherRequestDTO.getClassId());
-		UserEntity user = getUserById(teacherRequestDTO.getUserId());
+	    ClassEntity newClass = getClassById(teacherRequestDTO.getClassId());
+	    UserEntity user = getUserById(teacherRequestDTO.getUserId());
 
-		TeacherEntity teacher = new TeacherEntity();
-		teacher.setFirstName(teacherRequestDTO.getFirstName());
-		teacher.setLastName(teacherRequestDTO.getLastName());
-		teacher.setNewClass(newClass);
-		teacher.setUser(user);
-		teacherRepository.save(teacher);
-		logger.info("Created teacher with ID {}.", teacher.getId());
+	    TeacherEntity teacher = new TeacherEntity();
+	    teacher.setFirstName(teacherRequestDTO.getFirstName());
+	    teacher.setLastName(teacherRequestDTO.getLastName());
+	    teacher.setNewClass(newClass);;
+	    teacher.setUser(user);
 
-		return teacher;
+	    // Add subject only if subjectId is provided
+	    if (teacherRequestDTO.getSubjectId() != null) {
+	        SubjectEntity subject = getSubjectById(teacherRequestDTO.getSubjectId());
+	        teacher.addSubjects(subject);  // Associate the teacher with a subject
+	    }
+
+	    teacherRepository.save(teacher);
+	    logger.info("Created teacher with ID {}.", teacher.getId());
+
+	    return teacher;
 	}
+
 
 	@Override
 	public Iterable<TeacherEntity> getAllTeachers() {

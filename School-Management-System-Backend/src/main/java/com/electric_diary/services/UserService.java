@@ -9,6 +9,8 @@ public interface UserService {
 	public Iterable<UserEntity> getAllUsers();
 
 	public UserEntity getUserById(Integer userId);
+	
+	public UserEntity getUserByEmail(String userEmail);
 
 	public UserEntity updateUser(Integer userId, UserRequestDTO userDTOBody);
 
