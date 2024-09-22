@@ -114,7 +114,11 @@ const SubjectCard = () => {
             {!showForm && (
                 <>
                     <h2>Subjects Data:</h2>
-                    <SearchBar value={searchTerm} onChange={setSearchTerm} />
+                    <SearchBar
+                        value={searchTerm}
+                        onChange={setSearchTerm}
+                    />{' '}
+                    or:{' '}
                     <button onClick={() => setShowForm(true)}>
                         Add New Subject
                     </button>

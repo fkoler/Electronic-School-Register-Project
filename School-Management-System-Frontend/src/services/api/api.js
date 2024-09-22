@@ -103,3 +103,26 @@ export const putSubjectApi = async (
         subjectData
     );
 };
+
+export const postClassApi = async (classData, username, password) => {
+    return apiCall(`${apiURL}/classes`, 'POST', username, password, classData);
+};
+
+export const deleteClassApi = async (username, password, classId) => {
+    return apiCall(
+        `${apiURL}/classes/${classId}`,
+        'DELETE',
+        username,
+        password
+    );
+};
+
+export const putClassApi = async (username, password, classId, classData) => {
+    return apiCall(
+        `${apiURL}/classes/${classId}`,
+        'PUT',
+        username,
+        password,
+        classData
+    );
+};
