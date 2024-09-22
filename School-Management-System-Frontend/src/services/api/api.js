@@ -88,3 +88,18 @@ export const deleteSubjectApi = async (username, password, subjectId) => {
         password
     );
 };
+
+export const putSubjectApi = async (
+    username,
+    password,
+    subjectId,
+    subjectData
+) => {
+    return apiCall(
+        `${apiURL}/subjects/${subjectId}`,
+        'PUT',
+        username,
+        password,
+        subjectData
+    );
+};

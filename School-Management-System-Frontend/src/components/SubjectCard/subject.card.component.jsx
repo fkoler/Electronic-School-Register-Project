@@ -6,6 +6,7 @@ import {
     getSubjectsApi,
     postSubjectApi,
     deleteSubjectApi,
+    putSubjectApi,
 } from '../../services/api/api';
 
 import SearchBar from '../SearchBar/searchbar.component';
@@ -17,6 +18,7 @@ const SubjectCard = () => {
     const [error, setError] = useState(null);
     const [showForm, setShowForm] = useState(false);
     const [newSubject, setNewSubject] = useState({ name: '', weeklyFund: '' });
+    const [editingSubject, setEditingSubject] = useState(null);
 
     const email = useAuthStore((state) => state.user.email);
     const authPassword = useAuthStore((state) => state.user.password);
@@ -53,7 +55,6 @@ const SubjectCard = () => {
     const handleAddNewSubject = async () => {
         try {
             const result = await postSubjectApi(newSubject, email, password);
-
             setSubjects((prevSubjects) => [...prevSubjects, result]);
             setShowForm(false);
             setNewSubject({ name: '', weeklyFund: '' });
@@ -71,6 +72,39 @@ const SubjectCard = () => {
         }
     };
 
+    const handleEditSubject = (subject) => {
+        setEditingSubject(subject);
+        setShowForm(true);
+        setNewSubject({
+            name: subject.name,
+            weeklyFund: subject.weeklyFund,
+        });
+    };
+
+    const handleSaveEditSubject = async () => {
+        try {
+            await putSubjectApi(email, password, editingSubject.id, newSubject);
+            setSubjects((prevSubjects) =>
+                prevSubjects.map((sub) =>
+                    sub.id === editingSubject.id
+                        ? { ...sub, ...newSubject }
+                        : sub
+                )
+            );
+            setEditingSubject(null);
+            setShowForm(false);
+            setNewSubject({ name: '', weeklyFund: '' });
+        } catch (err) {
+            setError('Failed to update subject', err);
+        }
+    };
+
+    const handleCancelEdit = () => {
+        setEditingSubject(null);
+        setShowForm(false);
+        setNewSubject({ name: '', weeklyFund: '' });
+    };
+
     if (error) {
         return <p>{error}</p>;
     }
@@ -80,11 +114,8 @@ const SubjectCard = () => {
             {!showForm && (
                 <>
                     <h2>Subjects Data:</h2>
-                    <SearchBar
-                        value={searchTerm}
-                        onChange={setSearchTerm}
-                    />{' '}
-                    <button onClick={() => setShowForm(!showForm)}>
+                    <SearchBar value={searchTerm} onChange={setSearchTerm} />
+                    <button onClick={() => setShowForm(true)}>
                         Add New Subject
                     </button>
                 </>
@@ -92,7 +123,9 @@ const SubjectCard = () => {
 
             {showForm && (
                 <div style={{ marginTop: '20px' }}>
-                    <h3>Add New Subject</h3>
+                    <h3>
+                        {editingSubject ? 'Edit Subject' : 'Add New Subject'}
+                    </h3>
 
                     <input
                         type='text'
@@ -118,7 +151,16 @@ const SubjectCard = () => {
                         }
                     />
 
-                    <button onClick={handleAddNewSubject}>Submit</button>
+                    <button
+                        onClick={
+                            editingSubject
+                                ? handleSaveEditSubject
+                                : handleAddNewSubject
+                        }
+                    >
+                        {editingSubject ? 'Save' : 'Submit'}
+                    </button>
+                    <button onClick={handleCancelEdit}>Cancel</button>
                 </div>
             )}
 
@@ -142,8 +184,10 @@ const SubjectCard = () => {
                                 onClick={() => handleDeleteSubject(subject.id)}
                             >
                                 Delete
-                            </button>{' '}
-                            <button>Edit</button>
+                            </button>
+                            <button onClick={() => handleEditSubject(subject)}>
+                                Edit
+                            </button>
                         </div>
                     ))}
                 </div>
