@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types';
 
-const SearchBar = ({ value, onChange }) => {
+const SearchBar = ({ value, onChange, placeholder }) => {
     return (
         <input
             type='text'
-            placeholder='Search subjects...'
+            placeholder={placeholder}
             value={value}
             onChange={(e) => onChange(e.target.value)}
             style={styles.searchInput}
@@ -15,6 +15,7 @@ const SearchBar = ({ value, onChange }) => {
 SearchBar.propTypes = {
     value: PropTypes.string.isRequired,
     onChange: PropTypes.func.isRequired,
+    placeholder: PropTypes.string.isRequired,
 };
 
 const styles = {

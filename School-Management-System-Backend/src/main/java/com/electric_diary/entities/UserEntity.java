@@ -36,7 +36,7 @@ public class UserEntity {
 	@Column(name = "user_id")
 	protected Integer id;
 
-	@Column(unique = true, nullable = false, name = "name")
+	@Column(nullable = false, name = "name")
 	@NotBlank(message = "Name cannot be blank")
 	@NotNull(message = "Name name must be provided.")
 	@Size(min = 2, max = 30, message = "Name must be between {min} and {max} characters long.")

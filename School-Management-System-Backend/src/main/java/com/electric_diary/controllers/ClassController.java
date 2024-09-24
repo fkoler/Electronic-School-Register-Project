@@ -19,6 +19,7 @@ import com.electric_diary.services.ClassService;
 
 @RestController
 @RequestMapping(path = "/api/v1/classes")
+@CrossOrigin(origins = "http://localhost:3000")
 public class ClassController {
 	@Autowired
 	protected ClassService classService;

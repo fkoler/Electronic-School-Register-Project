@@ -117,7 +117,7 @@ public class ParentServiceImpl implements ParentService {
 			throw new IllegalArgumentException("Invalid email format.");
 		}
 
-		RoleEntity newRole = roleRepository.findById(202).orElseThrow(() -> new NotFoundException("Role", 202));
+		RoleEntity newRole = roleRepository.findById(3).orElseThrow(() -> new NotFoundException("Role", 3));
 
 		UserEntity user = new UserEntity();
 		user.setName(firstName);
@@ -129,13 +129,6 @@ public class ParentServiceImpl implements ParentService {
 		userRepository.save(user);
 		logger.info("Created user with ID {} and email {}", user.getId(), user.getEmail());
 
-		//try {
-		//	userRepository.save(user);
-		//	logger.info("Created user with ID {} and email {}", user.getId(), user.getEmail());
-		//} catch (Exception e) {
-		//	logger.error("Error while creating user: {}", e.getMessage());
-		//	throw new RuntimeException("User creation failed.");
-		//}
 		return user;
 	}
 }

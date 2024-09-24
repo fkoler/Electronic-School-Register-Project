@@ -14,5 +14,5 @@ public interface TeacherService {
 
 	public TeacherEntity deleteTeacher(Integer teacherId);
 
-	public TeacherEntity teacherTeachesSubject(Integer teacherId, TeacherRequestDTO teacherRequestDTO);
+	public TeacherEntity teacherTeachesSubject(Integer teacherId, Integer subjectId);
 }

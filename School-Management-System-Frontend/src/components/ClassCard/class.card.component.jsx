@@ -121,6 +121,7 @@ const ClassCard = () => {
                     <SearchBar
                         value={searchTerm}
                         onChange={setSearchTerm}
+                        placeholder='Search classes...'
                     />{' '}
                     or:{' '}
                     <button onClick={() => setShowForm(true)}>
@@ -167,7 +168,7 @@ const ClassCard = () => {
                                 onClick={() => handleDeleteClass(classItem.id)}
                             >
                                 Delete
-                            </button>
+                            </button>{' '}
                             <button onClick={() => handleEditClass(classItem)}>
                                 Edit
                             </button>

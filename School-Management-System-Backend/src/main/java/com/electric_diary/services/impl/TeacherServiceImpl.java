@@ -100,9 +100,9 @@ public class TeacherServiceImpl implements TeacherService {
 	}
 
 	@Override
-	public TeacherEntity teacherTeachesSubject(Integer teacherId, TeacherRequestDTO teacherRequestDTO) {
+	public TeacherEntity teacherTeachesSubject(Integer teacherId, Integer subjectId) {
 		TeacherEntity teacher = getTeacherById(teacherId);
-		SubjectEntity subject = getSubjectById(teacherRequestDTO.getSubjectId());
+		SubjectEntity subject = getSubjectById(subjectId);
 
 		teacher.addSubjects(subject);
 		teacherRepository.save(teacher);

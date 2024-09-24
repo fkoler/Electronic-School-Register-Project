@@ -8,6 +8,7 @@ import com.electric_diary.DTO.Request.StudentRequestDTO;
 import com.electric_diary.entities.ClassEntity;
 import com.electric_diary.entities.ParentEntity;
 import com.electric_diary.entities.StudentEntity;
+import com.electric_diary.entities.TeacherEntity;
 import com.electric_diary.entities.UserEntity;
 import com.electric_diary.exception.NotFoundException;
 import com.electric_diary.repositories.ClassRepository;
@@ -90,6 +91,9 @@ public class StudentServiceImpl implements StudentService {
 	@Override
 	public StudentEntity deleteStudent(Integer studentId) {
 		StudentEntity student = getStudentById(studentId);
+		
+		student.getParent().getStudents().remove(student);
+		
 		studentRepository.delete(student);
 		logger.info("Deleted student with ID {}.", studentId);
 		return student;

@@ -117,6 +117,7 @@ const SubjectCard = () => {
                     <SearchBar
                         value={searchTerm}
                         onChange={setSearchTerm}
+                        placeholder='Search subjects...'
                     />{' '}
                     or:{' '}
                     <button onClick={() => setShowForm(true)}>

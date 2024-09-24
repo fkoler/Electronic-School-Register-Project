@@ -62,8 +62,49 @@ export const getUsersApi = async (username, password) => {
     return apiCall(`${apiURL}/users`, 'GET', username, password);
 };
 
+export const postUserApi = async (userData, username, password) => {
+    return apiCall(`${apiURL}/users`, 'POST', username, password, userData);
+};
+
+export const putUserApi = async (userId, userData, username, password) => {
+    return apiCall(
+        `${apiURL}/users/${userId}`,
+        'PUT',
+        username,
+        password,
+        userData
+    );
+};
+
+export const deleteUserApi = async (userId, username, password) => {
+    return apiCall(`${apiURL}/users/${userId}`, 'DELETE', username, password);
+};
+
 export const getClassesApi = async (username, password) => {
     return apiCall(`${apiURL}/classes`, 'GET', username, password);
+};
+
+export const postClassApi = async (classData, username, password) => {
+    return apiCall(`${apiURL}/classes`, 'POST', username, password, classData);
+};
+
+export const putClassApi = async (username, password, classId, classData) => {
+    return apiCall(
+        `${apiURL}/classes/${classId}`,
+        'PUT',
+        username,
+        password,
+        classData
+    );
+};
+
+export const deleteClassApi = async (username, password, classId) => {
+    return apiCall(
+        `${apiURL}/classes/${classId}`,
+        'DELETE',
+        username,
+        password
+    );
 };
 
 export const getSubjectsApi = async (username, password) => {
@@ -77,15 +118,6 @@ export const postSubjectApi = async (subjectData, username, password) => {
         username,
         password,
         subjectData
-    );
-};
-
-export const deleteSubjectApi = async (username, password, subjectId) => {
-    return apiCall(
-        `${apiURL}/subjects/${subjectId}`,
-        'DELETE',
-        username,
-        password
     );
 };
 
@@ -104,25 +136,11 @@ export const putSubjectApi = async (
     );
 };
 
-export const postClassApi = async (classData, username, password) => {
-    return apiCall(`${apiURL}/classes`, 'POST', username, password, classData);
-};
-
-export const deleteClassApi = async (username, password, classId) => {
+export const deleteSubjectApi = async (username, password, subjectId) => {
     return apiCall(
-        `${apiURL}/classes/${classId}`,
+        `${apiURL}/subjects/${subjectId}`,
         'DELETE',
         username,
         password
-    );
-};
-
-export const putClassApi = async (username, password, classId, classData) => {
-    return apiCall(
-        `${apiURL}/classes/${classId}`,
-        'PUT',
-        username,
-        password,
-        classData
     );
 };

@@ -32,6 +32,7 @@ const Header = () => {
                                 Admin Dashboard
                             </h2>
                         )}
+
                         {user.role.name === 'ROLE_TEACHER' && (
                             <h2
                                 onClick={handleNavigate}

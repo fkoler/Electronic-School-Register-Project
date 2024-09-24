@@ -3,7 +3,6 @@ package com.electric_diary.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -50,8 +49,8 @@ public class TeacherController {
 		return new ResponseEntity<>(teacherService.deleteTeacher(teacherId), HttpStatus.OK);
 	}
 
-	@PutMapping("/teaches/Subject")
-	public ResponseEntity<TeacherEntity> teacherTeachesSubject(@PathVariable Integer teacherId, @RequestBody TeacherRequestDTO teacherDTOBody) {
-		return new ResponseEntity<>(teacherService.teacherTeachesSubject(teacherId, teacherDTOBody), HttpStatus.OK);
+	@PutMapping("/{teacherId}/subject/{subjectId}")
+	public ResponseEntity<TeacherEntity> teacherTeachesSubject(@PathVariable Integer teacherId, @PathVariable Integer subjectId) {
+		return new ResponseEntity<>(teacherService.teacherTeachesSubject(teacherId, subjectId), HttpStatus.OK);
 	}
 }
