@@ -1,14 +1,25 @@
 import PropTypes from 'prop-types';
+import { FormControl, Input, FormLabel } from '@chakra-ui/react';
 
 const SearchBar = ({ value, onChange, placeholder }) => {
     return (
-        <input
-            type='text'
-            placeholder={placeholder}
-            value={value}
-            onChange={(e) => onChange(e.target.value)}
-            style={styles.searchInput}
-        />
+        <FormControl>
+            <FormLabel htmlFor='search' srOnly>
+                Search
+            </FormLabel>
+            <Input
+                id='search'
+                type='text'
+                padding={4}
+                margin={4}
+                width={400}
+                borderRadius='md'
+                borderColor='#f5f5f5'
+                value={value}
+                placeholder={placeholder}
+                onChange={(e) => onChange(e.target.value)}
+            />
+        </FormControl>
     );
 };
 
@@ -16,17 +27,6 @@ SearchBar.propTypes = {
     value: PropTypes.string.isRequired,
     onChange: PropTypes.func.isRequired,
     placeholder: PropTypes.string.isRequired,
-};
-
-const styles = {
-    searchInput: {
-        padding: '8px',
-        marginBottom: '16px',
-        width: '100%',
-        maxWidth: '300px',
-        borderRadius: '4px',
-        border: '1px solid #ccc',
-    },
 };
 
 export default SearchBar;

@@ -1,6 +1,16 @@
 import { useState } from 'react';
 import useAuthStore from '../../utils/auth/useAuthStore';
 import { loginApi } from '../../services/api/api';
+import {
+    Box,
+    Button,
+    Flex,
+    FormControl,
+    FormLabel,
+    Heading,
+    Input,
+    Text,
+} from '@chakra-ui/react';
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -39,32 +49,46 @@ const Login = () => {
     };
 
     return (
-        <div>
-            {isUserLogedIn === null && (
-                <form onSubmit={handleSubmit}>
-                    <div>
-                        <label>Email:</label>
-                        <input
-                            type='email'
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                        />
-                    </div>
+        <Flex direction='column' align='center' justify='center' height='100vh'>
+            <Box
+                p={6}
+                borderRadius='md'
+                boxShadow='xl'
+                width={{ base: '90%', sm: '400px' }}
+            >
+                <Heading mb={4}>Login</Heading>
+                {isUserLogedIn === null && (
+                    <form onSubmit={handleSubmit}>
+                        <FormControl id='email' mb={4} isRequired>
+                            <FormLabel>Email:</FormLabel>
+                            <Input
+                                type='email'
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                            />
+                        </FormControl>
 
-                    <div>
-                        <label>Password:</label>
-                        <input
-                            type='password'
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                        />
-                    </div>
+                        <FormControl id='password' mb={4} isRequired>
+                            <FormLabel>Password:</FormLabel>
+                            <Input
+                                type='password'
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                            />
+                        </FormControl>
 
-                    <button type='submit'>Login</button>
-                    {error && <p style={{ color: 'red' }}>{error}</p>}
-                </form>
-            )}
-        </div>
+                        <Button type='submit' colorScheme='teal' width='full'>
+                            Login
+                        </Button>
+                        {error && (
+                            <Text color='red.500' mt={4}>
+                                {error}
+                            </Text>
+                        )}
+                    </form>
+                )}
+            </Box>
+        </Flex>
     );
 };
 

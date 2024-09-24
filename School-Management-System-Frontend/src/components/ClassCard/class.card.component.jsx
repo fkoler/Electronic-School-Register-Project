@@ -1,6 +1,16 @@
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-
+import {
+    Box,
+    Button,
+    Input,
+    Heading,
+    Text,
+    HStack,
+    VStack,
+    Flex,
+    useToast,
+} from '@chakra-ui/react';
 import useAuthStore from '../../utils/auth/useAuthStore';
 import {
     getClassesApi,
@@ -20,6 +30,8 @@ const ClassCard = () => {
     const [newClass, setNewClass] = useState({ name: '' });
     const [editingClass, setEditingClass] = useState(null);
 
+    const toast = useToast();
+
     const email = useAuthStore((state) => state.user.email);
     const authPassword = useAuthStore((state) => state.user.password);
     const password = authPassword.replace('{noop}', '');
@@ -32,11 +44,18 @@ const ClassCard = () => {
                 setFilteredClasses(result);
             } catch (err) {
                 setError('Failed to load classes', err);
+                toast({
+                    title: 'Error fetching classes',
+                    description: 'There was an error fetching the class data.',
+                    status: 'error',
+                    duration: 2000,
+                    isClosable: true,
+                });
             }
         };
 
         fetchClasses();
-    }, [email, password]);
+    }, [email, password, toast]);
 
     const normalizeString = (str) => str.trim().replace(/\s+/g, ' ');
 
@@ -58,8 +77,22 @@ const ClassCard = () => {
             setClasses((prevClasses) => [...prevClasses, result]);
             setShowForm(false);
             setNewClass({ name: '' });
+            toast({
+                title: 'Class added',
+                description: `Class "${newClass.name}" was successfully added.`,
+                status: 'success',
+                duration: 2000,
+                isClosable: true,
+            });
         } catch (err) {
             setError('Failed to add class', err);
+            toast({
+                title: 'Error adding class',
+                description: 'There was an error adding the class.',
+                status: 'error',
+                duration: 2000,
+                isClosable: true,
+            });
         } finally {
             setSearchTerm('');
         }
@@ -69,8 +102,22 @@ const ClassCard = () => {
         try {
             await deleteClassApi(email, password, classId);
             setClasses(classes.filter((classItem) => classItem.id !== classId));
+            toast({
+                title: 'Class deleted',
+                description: 'The class was successfully deleted.',
+                status: 'success',
+                duration: 2000,
+                isClosable: true,
+            });
         } catch (err) {
             setError('Failed to delete class', err);
+            toast({
+                title: 'Error deleting class',
+                description: 'There was an error deleting the class.',
+                status: 'error',
+                duration: 2000,
+                isClosable: true,
+            });
         } finally {
             setSearchTerm('');
         }
@@ -98,8 +145,22 @@ const ClassCard = () => {
             setEditingClass(null);
             setShowForm(false);
             setNewClass({ name: '' });
+            toast({
+                title: 'Class updated',
+                description: `Class "${newClass.name}" was successfully updated.`,
+                status: 'success',
+                duration: 2000,
+                isClosable: true,
+            });
         } catch (err) {
             setError('Failed to update class', err);
+            toast({
+                title: 'Error updating class',
+                description: 'There was an error updating the class.',
+                status: 'error',
+                duration: 2000,
+                isClosable: true,
+            });
         }
     };
 
@@ -110,73 +171,96 @@ const ClassCard = () => {
     };
 
     if (error) {
-        return <p>{error}</p>;
+        return <Text color='red.500'>{error}</Text>;
     }
 
     return (
-        <div>
+        <Box>
             {!showForm && (
                 <>
-                    <h2>Classes Data:</h2>
+                    <Heading as='h2' size='lg'>
+                        Classes Data:
+                    </Heading>
+
                     <SearchBar
                         value={searchTerm}
                         onChange={setSearchTerm}
                         placeholder='Search classes...'
-                    />{' '}
-                    or:{' '}
-                    <button onClick={() => setShowForm(true)}>
+                    />
+                    <Text mb={3}>Or: </Text>
+                    <Button mb={5} onClick={() => setShowForm(true)}>
                         Add New Class
-                    </button>
+                    </Button>
                 </>
             )}
 
             {showForm && (
-                <div style={{ marginTop: '20px' }}>
-                    <h3>{editingClass ? 'Edit Class' : 'Add New Class'}</h3>
-
-                    <input
-                        type='text'
+                <VStack spacing={4} mt={4}>
+                    <Heading as='h3' size='md' mb={4}>
+                        {editingClass ? 'Edit Class' : 'Add New Class'}
+                    </Heading>
+                    <Input
                         placeholder='Class Name'
                         value={newClass.name}
                         onChange={(e) =>
-                            setNewClass({
-                                ...newClass,
-                                name: e.target.value,
-                            })
+                            setNewClass({ ...newClass, name: e.target.value })
                         }
+                        mb={4}
                     />
-
-                    <button
-                        onClick={
-                            editingClass
-                                ? handleSaveEditClass
-                                : handleAddNewClass
-                        }
-                    >
-                        {editingClass ? 'Save' : 'Submit'}
-                    </button>
-                    <button onClick={handleCancelEdit}>Cancel</button>
-                </div>
+                    <HStack spacing={4}>
+                        <Button
+                            colorScheme='pink'
+                            onClick={
+                                editingClass
+                                    ? handleSaveEditClass
+                                    : handleAddNewClass
+                            }
+                            mr={4}
+                        >
+                            {editingClass ? 'Save' : 'Submit'}
+                        </Button>
+                        <Button colorScheme='teal' onClick={handleCancelEdit}>
+                            Cancel
+                        </Button>
+                    </HStack>
+                </VStack>
             )}
 
             {!showForm && (
-                <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+                <HStack wrap='wrap' justifyContent='center' spacing={4} mt={4}>
                     {filteredClasses.map((classItem) => (
-                        <div key={classItem.id} style={styles.card}>
-                            <h3>{classItem.name}</h3>
-                            <button
-                                onClick={() => handleDeleteClass(classItem.id)}
-                            >
-                                Delete
-                            </button>{' '}
-                            <button onClick={() => handleEditClass(classItem)}>
-                                Edit
-                            </button>
-                        </div>
+                        <Box
+                            key={classItem.id}
+                            borderWidth='1px'
+                            borderRadius='lg'
+                            boxShadow='sm'
+                            width='300px'
+                            p={4}
+                        >
+                            <Heading as='h3' size='md' color='#38b3b0'>
+                                {classItem.name}
+                            </Heading>
+                            <Flex justifyContent='space-around' mt={4}>
+                                <Button
+                                    colorScheme='pink'
+                                    onClick={() =>
+                                        handleDeleteClass(classItem.id)
+                                    }
+                                >
+                                    Delete
+                                </Button>
+                                <Button
+                                    colorScheme='teal'
+                                    onClick={() => handleEditClass(classItem)}
+                                >
+                                    Edit
+                                </Button>
+                            </Flex>
+                        </Box>
                     ))}
-                </div>
+                </HStack>
             )}
-        </div>
+        </Box>
     );
 };
 
@@ -187,18 +271,6 @@ ClassCard.propTypes = {
             name: PropTypes.string.isRequired,
         })
     ),
-};
-
-const styles = {
-    card: {
-        border: '1px solid #ccc',
-        borderRadius: '8px',
-        padding: '16px',
-        margin: '16px',
-        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-        width: '300px',
-        display: 'inline-block',
-    },
 };
 
 export default ClassCard;

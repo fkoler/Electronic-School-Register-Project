@@ -1,5 +1,16 @@
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import {
+    Box,
+    Button,
+    Heading,
+    Flex,
+    Input,
+    Text,
+    VStack,
+    HStack,
+    useToast,
+} from '@chakra-ui/react';
 
 import useAuthStore from '../../utils/auth/useAuthStore';
 import {
@@ -20,6 +31,8 @@ const SubjectCard = () => {
     const [newSubject, setNewSubject] = useState({ name: '', weeklyFund: '' });
     const [editingSubject, setEditingSubject] = useState(null);
 
+    const toast = useToast();
+
     const email = useAuthStore((state) => state.user.email);
     const authPassword = useAuthStore((state) => state.user.password);
     const password = authPassword.replace('{noop}', '');
@@ -32,11 +45,18 @@ const SubjectCard = () => {
                 setFilteredSubjects(result);
             } catch (err) {
                 setError('Failed to load subjects', err);
+                toast({
+                    title: 'Error.',
+                    description: 'Failed to load subjects.',
+                    status: 'error',
+                    duration: 2000,
+                    isClosable: true,
+                });
             }
         };
 
         fetchSubjects();
-    }, [email, password]);
+    }, [email, password, toast]);
 
     const normalizeString = (str) => str.trim().replace(/\s+/g, ' ');
 
@@ -58,8 +78,22 @@ const SubjectCard = () => {
             setSubjects((prevSubjects) => [...prevSubjects, result]);
             setShowForm(false);
             setNewSubject({ name: '', weeklyFund: '' });
+            toast({
+                title: 'Subject added.',
+                description: `New subject ${newSubject.name} has been added successfully.`,
+                status: 'success',
+                duration: 2000,
+                isClosable: true,
+            });
         } catch (err) {
             setError('Failed to add subject', err);
+            toast({
+                title: 'Error.',
+                description: 'Failed to add subject.',
+                status: 'error',
+                duration: 2000,
+                isClosable: true,
+            });
         }
     };
 
@@ -67,8 +101,24 @@ const SubjectCard = () => {
         try {
             await deleteSubjectApi(email, password, subjectId);
             setSubjects(subjects.filter((subject) => subject.id !== subjectId));
+            toast({
+                title: 'Subject deleted.',
+                description: 'Subject has been deleted successfully.',
+                status: 'success',
+                duration: 2000,
+                isClosable: true,
+            });
         } catch (err) {
             setError('Failed to delete subject', err);
+            toast({
+                title: 'Error.',
+                description: 'Failed to delete subject.',
+                status: 'error',
+                duration: 2000,
+                isClosable: true,
+            });
+        } finally {
+            setSearchTerm('');
         }
     };
 
@@ -94,8 +144,22 @@ const SubjectCard = () => {
             setEditingSubject(null);
             setShowForm(false);
             setNewSubject({ name: '', weeklyFund: '' });
+            toast({
+                title: 'Subject updated.',
+                description: 'Subject details have been updated successfully.',
+                status: 'success',
+                duration: 5000,
+                isClosable: true,
+            });
         } catch (err) {
             setError('Failed to update subject', err);
+            toast({
+                title: 'Error.',
+                description: 'Failed to update subject.',
+                status: 'error',
+                duration: 2000,
+                isClosable: true,
+            });
         }
     };
 
@@ -106,35 +170,37 @@ const SubjectCard = () => {
     };
 
     if (error) {
-        return <p>{error}</p>;
+        return <Text color='red.500'>{error}</Text>;
     }
 
     return (
-        <div>
+        <Box>
             {!showForm && (
                 <>
-                    <h2>Subjects Data:</h2>
+                    <Heading as='h2' size='lg'>
+                        Subjects Data:
+                    </Heading>
+
                     <SearchBar
                         value={searchTerm}
                         onChange={setSearchTerm}
                         placeholder='Search subjects...'
-                    />{' '}
-                    or:{' '}
-                    <button onClick={() => setShowForm(true)}>
+                    />
+                    <Text mb={3}>Or:</Text>
+                    <Button mb={5} onClick={() => setShowForm(true)}>
                         Add New Subject
-                    </button>
+                    </Button>
                 </>
             )}
 
             {showForm && (
-                <div style={{ marginTop: '20px' }}>
-                    <h3>
+                <VStack spacing={4} mt={4}>
+                    <Heading as='h3' size='md'>
                         {editingSubject ? 'Edit Subject' : 'Add New Subject'}
-                    </h3>
+                    </Heading>
 
-                    <input
-                        type='text'
-                        placeholder='Subject Name'
+                    <Input
+                        placeholder='Enter subject name'
                         value={newSubject.name}
                         onChange={(e) =>
                             setNewSubject({
@@ -144,9 +210,8 @@ const SubjectCard = () => {
                         }
                     />
 
-                    <input
-                        type='text'
-                        placeholder='Weekly Fund'
+                    <Input
+                        placeholder='Enter weekly fund'
                         value={newSubject.weeklyFund}
                         onChange={(e) =>
                             setNewSubject({
@@ -156,48 +221,70 @@ const SubjectCard = () => {
                         }
                     />
 
-                    <button
-                        onClick={
-                            editingSubject
-                                ? handleSaveEditSubject
-                                : handleAddNewSubject
-                        }
-                    >
-                        {editingSubject ? 'Save' : 'Submit'}
-                    </button>
-                    <button onClick={handleCancelEdit}>Cancel</button>
-                </div>
+                    <HStack spacing={4}>
+                        <Button
+                            colorScheme='pink'
+                            onClick={
+                                editingSubject
+                                    ? handleSaveEditSubject
+                                    : handleAddNewSubject
+                            }
+                        >
+                            {editingSubject ? 'Save' : 'Submit'}
+                        </Button>
+                        <Button colorScheme='teal' onClick={handleCancelEdit}>
+                            Cancel
+                        </Button>
+                    </HStack>
+                </VStack>
             )}
 
             {!showForm && (
-                <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+                <HStack wrap='wrap' justifyContent='center' spacing={4} mt={4}>
                     {filteredSubjects.map((subject) => (
-                        <div key={subject.id} style={styles.card}>
-                            <h3>{subject.name}</h3>
-                            <p>Weekly Fund: {subject.weeklyFund}</p>
-                            <p>
+                        <Box
+                            key={subject.id}
+                            borderWidth='1px'
+                            borderRadius='lg'
+                            boxShadow='sm'
+                            width='300px'
+                            p={4}
+                        >
+                            <Heading as='h3' size='md' color='#38b3b0'>
+                                {subject.name}
+                            </Heading>
+                            <Text>Weekly Fund: {subject.weeklyFund}</Text>
+                            <Text>
                                 Enrolled Students:{' '}
                                 {subject.enrolledStudents.length}
-                            </p>
-                            <p>
+                            </Text>
+                            <Text>
                                 Teachers:{' '}
                                 {subject.teachers
                                     .map((teacher) => teacher.name)
                                     .join(', ')}
-                            </p>
-                            <button
-                                onClick={() => handleDeleteSubject(subject.id)}
-                            >
-                                Delete
-                            </button>
-                            <button onClick={() => handleEditSubject(subject)}>
-                                Edit
-                            </button>
-                        </div>
+                            </Text>
+                            <Flex justifyContent='space-around' mt={4}>
+                                <Button
+                                    onClick={() =>
+                                        handleDeleteSubject(subject.id)
+                                    }
+                                    colorScheme='pink'
+                                >
+                                    Delete
+                                </Button>
+                                <Button
+                                    onClick={() => handleEditSubject(subject)}
+                                    colorScheme='teal'
+                                >
+                                    Edit
+                                </Button>
+                            </Flex>
+                        </Box>
                     ))}
-                </div>
+                </HStack>
             )}
-        </div>
+        </Box>
     );
 };
 
@@ -221,18 +308,6 @@ SubjectCard.propTypes = {
             ).isRequired,
         })
     ),
-};
-
-const styles = {
-    card: {
-        border: '1px solid #ccc',
-        borderRadius: '8px',
-        padding: '16px',
-        margin: '16px',
-        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-        width: '300px',
-        display: 'inline-block',
-    },
 };
 
 export default SubjectCard;

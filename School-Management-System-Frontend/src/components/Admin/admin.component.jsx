@@ -1,5 +1,5 @@
 import { useState } from 'react';
-
+import { Button, Stack, Heading, Box } from '@chakra-ui/react';
 import UserCard from '../UserCard/user.card.component';
 import ClassCard from '../ClassCard/class.card.component';
 import SubjectCard from '../SubjectCard/subject.card.component';
@@ -12,21 +12,31 @@ const AdminDashboard = () => {
     };
 
     return (
-        <div>
-            <h1>Welcome Admin</h1>
+        <Box p={4}>
+            <Heading mb={4}>Welcome Admin</Heading>
 
-            <div>
-                <button onClick={() => handleClick('users')}>Users</button>{' '}
-                <button onClick={() => handleClick('classes')}>Classes</button>{' '}
-                <button onClick={() => handleClick('subjects')}>
+            <Stack direction='row' spacing={4} mb={4} justifyContent='center'>
+                <Button onClick={() => handleClick('users')} colorScheme='teal'>
+                    Users
+                </Button>
+                <Button
+                    onClick={() => handleClick('classes')}
+                    colorScheme='teal'
+                >
+                    Classes
+                </Button>
+                <Button
+                    onClick={() => handleClick('subjects')}
+                    colorScheme='teal'
+                >
                     Subjects
-                </button>
-            </div>
+                </Button>
+            </Stack>
 
             {type === 'users' && <UserCard />}
             {type === 'classes' && <ClassCard />}
             {type === 'subjects' && <SubjectCard />}
-        </div>
+        </Box>
     );
 };
 

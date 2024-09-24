@@ -1,5 +1,16 @@
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import {
+    Box,
+    Button,
+    Heading,
+    Flex,
+    Input,
+    Text,
+    VStack,
+    HStack,
+    useToast,
+} from '@chakra-ui/react';
 import useAuthStore from '../../utils/auth/useAuthStore';
 import {
     getUsersApi,
@@ -28,6 +39,8 @@ const UserCard = () => {
     const authPassword = useAuthStore((state) => state.user.password);
     const password = authPassword.replace('{noop}', '');
 
+    const toast = useToast();
+
     useEffect(() => {
         const fetchUsers = async () => {
             try {
@@ -36,10 +49,17 @@ const UserCard = () => {
                 setFilteredUsers(result);
             } catch (err) {
                 setError('Failed to load users', err);
+                toast({
+                    title: 'Error.',
+                    description: 'Failed to load users.',
+                    status: 'error',
+                    duration: 2000,
+                    isClosable: true,
+                });
             }
         };
         fetchUsers();
-    }, [email, password]);
+    }, [email, password, toast]);
 
     const normalizeString = (str) => str.trim().replace(/\s+/g, ' ');
 
@@ -67,8 +87,22 @@ const UserCard = () => {
                 email: '',
                 role: '',
             });
+            toast({
+                title: 'Success.',
+                description: `User ${newUser.name} added successfully.`,
+                status: 'success',
+                duration: 2000,
+                isClosable: true,
+            });
         } catch (err) {
             setError('Failed to add user', err);
+            toast({
+                title: 'Error.',
+                description: 'Failed to add user.',
+                status: 'error',
+                duration: 2000,
+                isClosable: true,
+            });
         }
     };
 
@@ -76,8 +110,22 @@ const UserCard = () => {
         try {
             await deleteUserApi(userId, email, password);
             setUsers(users.filter((user) => user.id !== userId));
+            toast({
+                title: 'Success.',
+                description: 'User deleted successfully.',
+                status: 'success',
+                duration: 2000,
+                isClosable: true,
+            });
         } catch (err) {
             setError('Failed to delete user', err);
+            toast({
+                title: 'Error.',
+                description: 'Failed to delete user.',
+                status: 'error',
+                duration: 2000,
+                isClosable: true,
+            });
         } finally {
             setSearchTerm('');
         }
@@ -120,8 +168,22 @@ const UserCard = () => {
                 email: '',
                 role: '',
             });
+            toast({
+                title: 'Success.',
+                description: `User ${newUser.name} updated successfully.`,
+                status: 'success',
+                duration: 2000,
+                isClosable: true,
+            });
         } catch (err) {
             setError('Failed to update user', err);
+            toast({
+                title: 'Error.',
+                description: 'Failed to update user.',
+                status: 'error',
+                duration: 2000,
+                isClosable: true,
+            });
         }
     };
 
@@ -139,63 +201,64 @@ const UserCard = () => {
     };
 
     if (error) {
-        return <p>{error}</p>;
+        return <Text color='red.500'>{error}</Text>;
     }
 
     return (
-        <div>
+        <Box>
             {!showForm && (
                 <>
-                    <h2>Users Data:</h2>
+                    <Heading as='h2' size='lg'>
+                        Users Data:
+                    </Heading>
+
                     <SearchBar
                         value={searchTerm}
                         onChange={setSearchTerm}
                         placeholder='Search users...'
-                    />{' '}
-                    or:{' '}
-                    <button onClick={() => setShowForm(true)}>
+                    />
+                    <Text mb={3}>Or: </Text>
+                    <Button mb={5} onClick={() => setShowForm(true)}>
                         Add New User
-                    </button>
+                    </Button>
                 </>
             )}
 
             {showForm && (
-                <div style={{ marginTop: '20px' }}>
-                    <h3>{editingUser ? 'Edit User' : 'Add New User'}</h3>
-                    <input
-                        type='text'
+                <VStack spacing={4} mt={4}>
+                    <Heading as='h3' size='md'>
+                        {editingUser ? 'Edit User' : 'Add New User'}
+                    </Heading>
+                    <Input
                         placeholder='Name'
                         value={newUser.name}
                         onChange={(e) =>
                             setNewUser({ ...newUser, name: e.target.value })
                         }
                     />
-                    <input
-                        type='text'
+                    <Input
                         placeholder='Last Name'
                         value={newUser.lastName}
                         onChange={(e) =>
                             setNewUser({ ...newUser, lastName: e.target.value })
                         }
                     />
-                    <input
-                        type='email'
+                    <Input
                         placeholder='Email'
                         value={newUser.email}
                         onChange={(e) =>
                             setNewUser({ ...newUser, email: e.target.value })
                         }
                     />
-                    <input
-                        type='password'
+                    <Input
                         placeholder='Password'
+                        type='password'
                         value={newUser.password}
                         onChange={(e) =>
                             setNewUser({ ...newUser, password: e.target.value })
                         }
                     />
-                    <input
-                        type='text'
+                    <Input
                         placeholder='Role ID'
                         value={newUser.role}
                         onChange={(e) =>
@@ -203,35 +266,59 @@ const UserCard = () => {
                         }
                     />
 
-                    <button
-                        onClick={
-                            editingUser ? handleSaveEditUser : handleAddUser
-                        }
-                    >
-                        {editingUser ? 'Save' : 'Submit'}
-                    </button>
-                    <button onClick={handleCancelEdit}>Cancel</button>
-                </div>
+                    <HStack spacing={4}>
+                        <Button
+                            colorScheme='pink'
+                            onClick={
+                                editingUser ? handleSaveEditUser : handleAddUser
+                            }
+                            mr={4}
+                        >
+                            {editingUser ? 'Save' : 'Submit'}
+                        </Button>
+                        <Button onClick={handleCancelEdit} colorScheme='teal'>
+                            Cancel
+                        </Button>
+                    </HStack>
+                </VStack>
             )}
 
             {!showForm && (
-                <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+                <HStack wrap='wrap' justifyContent='center' spacing={4} mt={4}>
                     {filteredUsers.map((user) => (
-                        <div key={user.id} style={styles.card}>
-                            <h3>{`${user.name} ${user.lastName}`}</h3>
-                            <p>Email: {user.email}</p>
-                            <p>Role: {user.role.name}</p>
-                            <button onClick={() => handleDeleteUser(user.id)}>
-                                Delete
-                            </button>{' '}
-                            <button onClick={() => handleEditUser(user)}>
-                                Edit
-                            </button>
-                        </div>
+                        <Box
+                            key={user.id}
+                            borderWidth='1px'
+                            borderRadius='lg'
+                            boxShadow='sm'
+                            width='300px'
+                            p={4}
+                        >
+                            <Heading as='h3' size='md' color='#38b3b0'>
+                                {`${user.name} ${user.lastName}`}
+                            </Heading>
+                            <Text>Email: {user.email}</Text>
+                            <Text>Role: {user.role.name}</Text>
+
+                            <Flex justifyContent='space-around' mt={4}>
+                                <Button
+                                    onClick={() => handleDeleteUser(user.id)}
+                                    colorScheme='pink'
+                                >
+                                    Delete
+                                </Button>
+                                <Button
+                                    onClick={() => handleEditUser(user)}
+                                    colorScheme='teal'
+                                >
+                                    Edit
+                                </Button>
+                            </Flex>
+                        </Box>
                     ))}
-                </div>
+                </HStack>
             )}
-        </div>
+        </Box>
     );
 };
 
@@ -249,18 +336,6 @@ UserCard.propTypes = {
             }).isRequired,
         })
     ),
-};
-
-const styles = {
-    card: {
-        border: '1px solid #ccc',
-        borderRadius: '8px',
-        padding: '16px',
-        margin: '16px',
-        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-        width: '300px',
-        display: 'inline-block',
-    },
 };
 
 export default UserCard;
