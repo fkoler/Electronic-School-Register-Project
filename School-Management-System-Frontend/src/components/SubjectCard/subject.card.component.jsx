@@ -31,11 +31,11 @@ const SubjectCard = () => {
     const [newSubject, setNewSubject] = useState({ name: '', weeklyFund: '' });
     const [editingSubject, setEditingSubject] = useState(null);
 
-    const toast = useToast();
-
     const email = useAuthStore((state) => state.user.email);
     const authPassword = useAuthStore((state) => state.user.password);
     const password = authPassword.replace('{noop}', '');
+
+    const toast = useToast();
 
     useEffect(() => {
         const fetchSubjects = async () => {
@@ -73,14 +73,55 @@ const SubjectCard = () => {
     }, [searchTerm, subjects]);
 
     const handleAddNewSubject = async () => {
+        const subjectName = newSubject.name.trim();
+        const weeklyFund = +newSubject.weeklyFund;
+
+        if (!subjectName) {
+            toast({
+                title: 'Validation Error',
+                description: 'Subject name cannot be empty.',
+                status: 'error',
+                duration: 2000,
+                isClosable: true,
+            });
+            return;
+        }
+
+        if (subjectName.length < 5 || subjectName.length > 30) {
+            toast({
+                title: 'Validation Error',
+                description:
+                    'Subject name must be between 5 and 30 characters long.',
+                status: 'error',
+                duration: 2000,
+                isClosable: true,
+            });
+            return;
+        }
+
+        if (!weeklyFund || isNaN(weeklyFund) || weeklyFund <= 0) {
+            toast({
+                title: 'Validation Error',
+                description: 'Weekly fund must be a positive number.',
+                status: 'error',
+                duration: 2000,
+                isClosable: true,
+            });
+            return;
+        }
+
         try {
-            const result = await postSubjectApi(newSubject, email, password);
+            const result = await postSubjectApi(
+                { ...newSubject, weeklyFund },
+                email,
+                password
+            );
             setSubjects((prevSubjects) => [...prevSubjects, result]);
             setShowForm(false);
             setNewSubject({ name: '', weeklyFund: '' });
             toast({
                 title: 'Subject added.',
-                description: `New subject ${newSubject.name} has been added successfully.`,
+                description: `New subject "${newSubject.name}" has been added successfully.`,
                 status: 'success',
                 duration: 2000,
                 isClosable: true,
@@ -132,6 +173,43 @@ const SubjectCard = () => {
     };
 
     const handleSaveEditSubject = async () => {
+        const subjectName = newSubject.name.trim();
+        const weeklyFund = +newSubject.weeklyFund;
+
+        if (!subjectName) {
+            toast({
+                title: 'Validation Error',
+                description: 'Subject name cannot be empty.',
+                status: 'error',
+                duration: 2000,
+                isClosable: true,
+            });
+            return;
+        }
+
+        if (subjectName.length < 5 || subjectName.length > 30) {
+            toast({
+                title: 'Validation Error',
+                description:
+                    'Subject name must be between 5 and 30 characters long.',
+                status: 'error',
+                duration: 2000,
+                isClosable: true,
+            });
+            return;
+        }
+
+        if (!weeklyFund || isNaN(weeklyFund) || weeklyFund <= 0) {
+            toast({
+                title: 'Validation Error',
+                description: 'Weekly fund must be a positive number.',
+                status: 'error',
+                duration: 2000,
+                isClosable: true,
+            });
+            return;
+        }
+
         try {
             await putSubjectApi(email, password, editingSubject.id, newSubject);
             setSubjects((prevSubjects) =>
@@ -148,7 +226,7 @@ const SubjectCard = () => {
                 title: 'Subject updated.',
                 description: 'Subject details have been updated successfully.',
                 status: 'success',
-                duration: 5000,
+                duration: 2000,
                 isClosable: true,
             });
         } catch (err) {
@@ -167,6 +245,7 @@ const SubjectCard = () => {
         setEditingSubject(null);
         setShowForm(false);
         setNewSubject({ name: '', weeklyFund: '' });
+        setSearchTerm('');
     };
 
     if (error) {
@@ -216,7 +295,7 @@ const SubjectCard = () => {
                         onChange={(e) =>
                             setNewSubject({
                                 ...newSubject,
-                                weeklyFund: +e.target.value,
+                                weeklyFund: e.target.value,
                             })
                         }
                     />

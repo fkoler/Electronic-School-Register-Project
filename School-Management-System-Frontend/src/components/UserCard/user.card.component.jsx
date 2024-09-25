@@ -76,8 +76,82 @@ const UserCard = () => {
     }, [searchTerm, users]);
 
     const handleAddUser = async () => {
+        if (
+            !newUser.name ||
+            !newUser.lastName ||
+            !newUser.email ||
+            !newUser.password ||
+            !newUser.role
+        ) {
+            toast({
+                title: 'Validation Error.',
+                description: 'All fields are required.',
+                status: 'error',
+                duration: 2000,
+                isClosable: true,
+            });
+            return;
+        }
+
+        if (newUser.name.length < 3 || newUser.name.length > 20) {
+            toast({
+                title: 'Validation Error.',
+                description: 'Name must be between 3 and 20 characters.',
+                status: 'error',
+                duration: 2000,
+                isClosable: true,
+            });
+            return;
+        }
+
+        if (newUser.lastName.length < 3 || newUser.lastName.length > 20) {
+            toast({
+                title: 'Validation Error.',
+                description: 'Last name must be between 3 and 20 characters.',
+                status: 'error',
+                duration: 2000,
+                isClosable: true,
+            });
+            return;
+        }
+
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (!emailPattern.test(newUser.email)) {
+            toast({
+                title: 'Validation Error.',
+                description: 'Please enter a valid email address.',
+                status: 'error',
+                duration: 2000,
+                isClosable: true,
+            });
+            return;
+        }
+
+        if (isNaN(newUser.role) || newUser.role < 1 || newUser.role > 3) {
+            toast({
+                title: 'Validation Error.',
+                description:
+                    'Please enter a valid role, where 1 is Admin, 2 is Teacher, 3 is Parent.',
+                status: 'error',
+                duration: 2000,
+                isClosable: true,
+            });
+            return;
+        }
+
+        const newUserWithPassword = {
+            ...newUser,
+            password: `${newUser.password}`,
+        };
+
         try {
-            const result = await postUserApi(newUser, email, password);
+            const result = await postUserApi(
+                newUserWithPassword,
+                email,
+                password
+            );
+
             setUsers([...users, result]);
             setShowForm(false);
             setNewUser({
@@ -87,6 +161,7 @@ const UserCard = () => {
                 email: '',
                 role: '',
             });
+
             toast({
                 title: 'Success.',
                 description: `User ${newUser.name} added successfully.`,
@@ -96,6 +171,7 @@ const UserCard = () => {
             });
         } catch (err) {
             setError('Failed to add user', err);
+
             toast({
                 title: 'Error.',
                 description: 'Failed to add user.',
@@ -103,6 +179,8 @@ const UserCard = () => {
                 duration: 2000,
                 isClosable: true,
             });
+        } finally {
+            setSearchTerm('');
         }
     };
 
@@ -110,6 +188,7 @@ const UserCard = () => {
         try {
             await deleteUserApi(userId, email, password);
             setUsers(users.filter((user) => user.id !== userId));
+
             toast({
                 title: 'Success.',
                 description: 'User deleted successfully.',
@@ -119,6 +198,7 @@ const UserCard = () => {
             });
         } catch (err) {
             setError('Failed to delete user', err);
+
             toast({
                 title: 'Error.',
                 description: 'Failed to delete user.',
@@ -145,13 +225,83 @@ const UserCard = () => {
     };
 
     const handleSaveEditUser = async () => {
+        if (
+            !newUser.name ||
+            !newUser.lastName ||
+            !newUser.email ||
+            !newUser.password ||
+            !newUser.role
+        ) {
+            toast({
+                title: 'Validation Error.',
+                description: 'All fields are required.',
+                status: 'error',
+                duration: 2000,
+                isClosable: true,
+            });
+            return;
+        }
+
+        if (newUser.name.length < 3 || newUser.name.length > 20) {
+            toast({
+                title: 'Validation Error.',
+                description: 'Name must be between 3 and 20 characters.',
+                status: 'error',
+                duration: 2000,
+                isClosable: true,
+            });
+            return;
+        }
+
+        if (newUser.lastName.length < 3 || newUser.lastName.length > 20) {
+            toast({
+                title: 'Validation Error.',
+                description: 'Last name must be between 3 and 20 characters.',
+                status: 'error',
+                duration: 2000,
+                isClosable: true,
+            });
+            return;
+        }
+
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (!emailPattern.test(newUser.email)) {
+            toast({
+                title: 'Validation Error.',
+                description: 'Please enter a valid email address.',
+                status: 'error',
+                duration: 2000,
+                isClosable: true,
+            });
+            return;
+        }
+
+        if (isNaN(newUser.role) || newUser.role < 1 || newUser.role > 3) {
+            toast({
+                title: 'Validation Error.',
+                description:
+                    'Please enter a valid role, where 1 is Admin, 2 is Teacher, 3 is Parent.',
+                status: 'error',
+                duration: 2000,
+                isClosable: true,
+            });
+            return;
+        }
+
+        const userWithPassword = {
+            ...newUser,
+            password: `{noop}${newUser.password}`,
+        };
+
         try {
             const updatedUser = await putUserApi(
                 editingUser.id,
-                newUser,
+                userWithPassword,
                 email,
                 password
             );
+
             setUsers((prevUsers) =>
                 prevUsers.map((user) =>
                     user.id === editingUser.id
@@ -159,6 +309,7 @@ const UserCard = () => {
                         : user
                 )
             );
+
             setEditingUser(null);
             setShowForm(false);
             setNewUser({
@@ -168,6 +319,7 @@ const UserCard = () => {
                 email: '',
                 role: '',
             });
+
             toast({
                 title: 'Success.',
                 description: `User ${newUser.name} updated successfully.`,
@@ -262,7 +414,7 @@ const UserCard = () => {
                         placeholder='Role ID'
                         value={newUser.role}
                         onChange={(e) =>
-                            setNewUser({ ...newUser, role: +e.target.value })
+                            setNewUser({ ...newUser, role: e.target.value })
                         }
                     />
 

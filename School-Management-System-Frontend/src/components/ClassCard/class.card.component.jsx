@@ -30,11 +30,11 @@ const ClassCard = () => {
     const [newClass, setNewClass] = useState({ name: '' });
     const [editingClass, setEditingClass] = useState(null);
 
-    const toast = useToast();
-
     const email = useAuthStore((state) => state.user.email);
     const authPassword = useAuthStore((state) => state.user.password);
     const password = authPassword.replace('{noop}', '');
+
+    const toast = useToast();
 
     useEffect(() => {
         const fetchClasses = async () => {
@@ -72,6 +72,31 @@ const ClassCard = () => {
     }, [searchTerm, classes]);
 
     const handleAddNewClass = async () => {
+        const className = newClass.name.trim();
+
+        if (!className) {
+            toast({
+                title: 'Validation Error',
+                description: 'Class name cannot be empty.',
+                status: 'error',
+                duration: 2000,
+                isClosable: true,
+            });
+            return;
+        }
+
+        if (className.length < 5 || className.length > 10) {
+            toast({
+                title: 'Validation Error',
+                description:
+                    'Class name must be between 5 and 10 characters long.',
+                status: 'error',
+                duration: 2000,
+                isClosable: true,
+            });
+            return;
+        }
+
         try {
             const result = await postClassApi(newClass, email, password);
             setClasses((prevClasses) => [...prevClasses, result]);
@@ -133,6 +158,31 @@ const ClassCard = () => {
     };
 
     const handleSaveEditClass = async () => {
+        const className = newClass.name.trim();
+
+        if (!className) {
+            toast({
+                title: 'Validation Error',
+                description: 'Class name cannot be empty.',
+                status: 'error',
+                duration: 2000,
+                isClosable: true,
+            });
+            return;
+        }
+
+        if (className.length < 5 || className.length > 10) {
+            toast({
+                title: 'Validation Error',
+                description:
+                    'Class name must be between 5 and 10 characters long.',
+                status: 'error',
+                duration: 2000,
+                isClosable: true,
+            });
+            return;
+        }
+
         try {
             await putClassApi(email, password, editingClass.id, newClass);
             setClasses((prevClasses) =>
@@ -161,6 +211,8 @@ const ClassCard = () => {
                 duration: 2000,
                 isClosable: true,
             });
+        } finally {
+            setSearchTerm('');
         }
     };
 
