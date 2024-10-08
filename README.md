@@ -47,7 +47,7 @@ To run the code, you need to install Lombok. You can follow this easy tutorial f
 
 ## Running the Frontend
 
-To run the frontend application, ensure you have [Node.js](https://nodejs.org/) installed. Then, follow these steps:
+To run the frontend application, ensure you have [Node.js](https://nodejs.org/) and [Yarn](https://www.npmjs.com/package/yarn) installed. Then, follow these steps:
 
 1. Clone the repository:
     ```bash
@@ -59,11 +59,11 @@ To run the frontend application, ensure you have [Node.js](https://nodejs.org/) 
     ```
 3. Install the dependencies:
     ```bash
-    npm i
+    yarn
     ```
 4. Start the development server:
     ```bash
-    npm start
+    yarn dev
     ```
 
 ### Features
